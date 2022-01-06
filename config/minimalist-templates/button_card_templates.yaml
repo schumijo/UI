@@ -1896,6 +1896,7 @@ card_light_slider_aio:
     ulm_card_light_slider_aio_enable_collapse: false
     ulm_card_light_slider_aio_enable_slider: false
     ulm_card_light_slider_aio_enable_horizontal: false
+    ulm_card_light_slider_aio_enable_horizontal_wide: false
     ulm_card_light_slider_aio_enable_color: false
     ulm_card_light_slider_aio_enable_background_color: false
     ulm_card_light_slider_aio_force_background_color: false
@@ -1947,7 +1948,11 @@ card_light_slider_aio:
                 if (variables.ulm_card_light_slider_aio_enable_collapse && entity.state == "off") {
                     return "1fr";
                 } else if (variables.ulm_card_light_slider_aio_enable_horizontal) {
-                    return "1fr 1fr";
+                  if(variables.ulm_card_light_slider_aio_enable_horizontal_wide){
+                    return "1fr 2fr";
+                    } else {
+                      return "1fr 1fr";
+                    }
                 } else {
                     return "1fr";
                 }
@@ -1984,61 +1989,93 @@ card_light_slider_aio:
       card:
         type: "custom:button-card"
         template:
-          - "icon_info"
-        entity: "[[[ return entity.entity_id ]]]"
-        name: "[[[ return variables.ulm_card_light_slider_aio_name ]]]"
-        icon: "[[[ return variables.ulm_card_light_slider_aio_icon ]]]"
-        label: >-
-          [[[
-            if (entity.state !="unavailable"){
-              if (entity.state =="off"){
-                return variables.ulm_off;
-              } else if (entity.state == "on"){
-                if (entity.attributes.brightness != null){
-                  var bri = Math.round(entity.attributes.brightness / 2.55);
-                  return (bri ? bri : "0") + "%";
-                } else {
-                  return variables.ulm_on
-                }
-              }
-            } else {
-              return variables.ulm_unavailable;
-            }
-          ]]]
-        styles:
-          card:
-            - background: none
-            - box-shadow: "none"
-            - border-radius: "var(--border-radius) var(--border-radius) var(--border-radius) var(--border-radius)"
-            - padding: "0px"
-          icon:
-            - color: >
+          - "icon_more_info"
+        custom_fields:
+          item1:
+            card:
+              type: "custom:button-card"
+              entity: "[[[ return entity.entity_id ]]]"
+              icon: "[[[ return variables.ulm_card_light_slider_aio_icon ]]]"
+              styles:
+                icon:
+                  - color: >
+                      [[[
+                          var color = entity.attributes.rgb_color;
+                          if (entity.state != "on"){
+                            return 'rgba(var(--color-theme),0.2)';
+                          }
+                          else if (color && variables.ulm_card_light_slider_aio_enable_color){
+                            return 'rgba(' + color + ',1)'
+                          }
+                          else{
+                            return 'rgba(var(--color-yellow),1)'
+                          }
+                      ]]]
+                img_cell:
+                  - background-color: >
+                      [[[
+                          var color = entity.attributes.rgb_color;
+                          if (entity.state != "on"){
+                            return 'rgba(var(--color-theme),0.05)';
+                          }
+                          else if (color && variables.ulm_card_light_slider_aio_enable_color){
+                            return 'rgba(' + color + ',0.2)';
+                          }
+                          else{
+                            return 'rgba(var(--color-yellow),0.2)';
+                          }
+                      ]]]
+          item2:
+            card:
+              type: "custom:button-card"
+              entity: "[[[ return entity.entity_id ]]]"
+              name: "[[[ return variables.ulm_card_light_slider_aio_name ]]]"
+              label: >-
                 [[[
-                    var color = entity.attributes.rgb_color;
-                    if (entity.state != "on"){
-                      return 'rgba(var(--color-theme),0.2)';
+                  if (entity.state !="unavailable"){
+                    if (entity.state =="off"){
+                      return variables.ulm_off;
+                    } else if (entity.state == "on"){
+                      if (entity.attributes.brightness != null){
+                        var bri = Math.round(entity.attributes.brightness / 2.55);
+                        return (bri ? bri : "0") + "%";
+                      } else {
+                        return variables.ulm_on
+                      }
                     }
-                    else if (color && variables.ulm_card_light_slider_aio_enable_color){
-                      return 'rgba(' + color + ',1)'
-                    }
-                    else{
-                      return 'rgba(var(--color-yellow),1)'
-                    }
+                  } else {
+                    return variables.ulm_unavailable;
+                  }
                 ]]]
-          img_cell:
-            - background-color: >
-                [[[
-                    var color = entity.attributes.rgb_color;
-                    if (entity.state != "on"){
-                      return 'rgba(var(--color-theme),0.05)';
-                    }
-                    else if (color && variables.ulm_card_light_slider_aio_enable_color){
-                      return 'rgba(' + color + ',0.2)';
-                    }
-                    else{
-                      return 'rgba(var(--color-yellow),0.2)';
-                    }
-                ]]]
+              styles:
+                name:
+                  - color: >-
+                      [[[
+                          var color = entity.attributes.rgb_color;
+                          if (entity.state != "on"){
+                            return 'rgba(var(--color-yellow-text),1)';
+                          }
+                          else if (color && variables.ulm_card_light_slider_aio_force_background_color){
+                            return 'rgba(' + color + ',1)'
+                          }
+                          else{
+                            return 'rgba(var(--color-yellow-text),1)'
+                          }
+                      ]]]
+                label:
+                  - color: >-
+                      [[[
+                          var color = entity.attributes.rgb_color;
+                          if (entity.state != "on"){
+                            return 'rgba(var(--color-yellow-text),1)';
+                          }
+                          else if (color && variables.ulm_card_light_slider_aio_force_background_color){
+                            return 'rgba(' + color + ',1)'
+                          }
+                          else{
+                            return 'rgba(var(--color-yellow-text),1)'
+                          }
+                      ]]]
     item2:
       card:
         type: "custom:my-slider"
@@ -2082,3 +2119,37 @@ card_light_slider_aio:
             border-radius: 14px;
             box-shadow: none;
           }
+icon_more_info:
+  show_icon: false
+  show_name: false
+  show_label: false
+  template:
+    - list_2_items
+  styles:
+    grid:
+      - grid-template-columns: "min-content auto"
+      - column-gap: "0px"
+    card:
+      - background-color: "rgba(0,0,0,0)"
+  hold_action:
+    action: "more-info"
+  custom_fields:
+    item1:
+      card:
+        type: "custom:button-card"
+        template:
+          - "icon"
+        tap_action:
+          action: "more-info"
+    item2:
+      card:
+        type: "custom:button-card"
+        show_icon: false
+        template:
+          - "icon_info"
+        styles:
+          card:
+            - padding: "6px"
+            - margin-left: "-6px"
+            - background-color: "rgba(0,0,0,0)"
+        custom_fields:
